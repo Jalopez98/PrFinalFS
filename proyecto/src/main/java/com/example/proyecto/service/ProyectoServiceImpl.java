@@ -21,18 +21,39 @@ public class ProyectoServiceImpl implements ProyectoService{
     @Autowired
     private EmpleadoRepository empleadoRepository;
 
+    /**
+     * Obtiene una lista de todos los proyectos.
+     * @return Lista de proyectos.
+     */
+    public List<Proyecto> obtenerP() {
+        return proyectoRepository.findAll();
+    }
 
-    public List<Proyecto> obtenerP(){return proyectoRepository.findAll();}
-
+    /**
+     * Guarda un proyecto.
+     * @param proyecto Objeto Proyecto a guardar.
+     * @return El proyecto guardado.
+     */
     public Proyecto save(Proyecto proyecto) {
         return proyectoRepository.save(proyecto);
     }
 
+    /**
+     * Busca un proyecto por su ID.
+     * @param id ID del proyecto.
+     * @return El proyecto encontrado o null si no existe.
+     */
     public Proyecto findById(int id) {
         Optional<Proyecto> proyecto = proyectoRepository.findById(id);
         return proyecto.orElse(null);
     }
 
+    /**
+     * Elimina un proyecto por su ID.
+     * Verifica si el proyecto está asociado a algún empleado antes de eliminarlo.
+     * @param id ID del proyecto a eliminar.
+     * @throws ExceptionPersonalizada Si el proyecto está asociado a algún empleado.
+     */
     @Override
     public void delete(int id) {
         // Verificar si el proyecto está asociado a algún empleado
@@ -55,6 +76,12 @@ public class ProyectoServiceImpl implements ProyectoService{
         }
     }
 
+    /**
+     * Asigna un empleado a un proyecto.
+     * @param proyectoId ID del proyecto.
+     * @param empleadoId ID del empleado.
+     * @return El proyecto actualizado con el empleado asignado o null si no existe.
+     */
     public Proyecto asignarEmpleado(int proyectoId, int empleadoId) {
         Proyecto proyecto = findById(proyectoId);
         if (proyecto == null) {
@@ -67,6 +94,5 @@ public class ProyectoServiceImpl implements ProyectoService{
         proyecto.getEmpleados().add(empleado);
         return proyectoRepository.save(proyecto);
     }
-
 }
 

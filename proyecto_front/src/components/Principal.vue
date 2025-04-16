@@ -210,19 +210,19 @@
 </template>
 
 <script>
-import { useEmpleadoStore } from './../stores/Empleados';
-import { storeToRefs } from 'pinia';
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { useEmpleadoStore } from './../stores/Empleados'; // Importa el store de Pinia para empleados
+import { storeToRefs } from 'pinia'; // Importa storeToRefs para extraer propiedades reactivas del store
+import { useRouter } from 'vue-router'; // Importa useRouter para la navegación
+import { ref } from 'vue'; // Importa ref para crear referencias reactivas
 
 export default {
-  name: 'EmpleadoList',
+  name: 'EmpleadoList', // Nombre del componente
   setup() {
-    const empleadoStore = useEmpleadoStore();
-    const { empleados } = storeToRefs(empleadoStore);
-    const router = useRouter();
+    const empleadoStore = useEmpleadoStore(); // Obtiene el store de Pinia para empleados
+    const { empleados } = storeToRefs(empleadoStore); // Extrae la lista de empleados del store
+    const router = useRouter(); // Obtiene el enrutador
 
-    empleadoStore.fetchEmpleados();
+    empleadoStore.fetchEmpleados(); // Obtiene la lista de empleados del backend
 
     const headers = [
       { title: 'DNI', key: 'nif', align: 'start' },
@@ -234,13 +234,13 @@ export default {
       { title: 'Estado civil', key: 'estadoCivil', align: 'start' },
       { title: 'Formación universitaria', key: 'formacionUniversitaria', align: 'start' },
       { title: 'Acciones', key: 'actions', align: 'center' },
-    ];
+    ]; // Encabezados para la tabla de datos
 
-    const estadoCivilOptions = ['S', 'C'];
-    const formacionUniversitariaOptions = ['S', 'N'];
+    const estadoCivilOptions = ['S', 'C']; // Opciones para el estado civil
+    const formacionUniversitariaOptions = ['S', 'N']; // Opciones para la formación universitaria
 
-    const editDialog = ref(false);
-    const viewDialog = ref(false);
+    const editDialog = ref(false); // Ref para controlar el diálogo de edición
+    const viewDialog = ref(false); // Ref para controlar el diálogo de proyectos
     const selectedEmpleado = ref({
       idEmpleado: null,
       nombre: '',
@@ -253,20 +253,20 @@ export default {
       estadoCivil: '',
       formacionUniversitaria: '',
       proyectos: [],
-    });
+    }); // Ref para el empleado seleccionado para editar
 
-    const selectedEmpleadoName = ref('');
-    const proyectosEmpleado = ref([]);
-    const errors = ref({});
+    const selectedEmpleadoName = ref(''); // Ref para el nombre del empleado seleccionado
+    const proyectosEmpleado = ref([]); // Ref para los proyectos del empleado
+    const errors = ref({}); // Ref para almacenar los errores de validación
 
     const snackbar = ref({
       visible: false,
       text: '',
       color: 'red',
       timeout: 5000,
-    });
+    }); // Ref para controlar el snackbar
 
-    const altaEmpleadoDialog = ref(false);
+    const altaEmpleadoDialog = ref(false); // Ref para controlar el diálogo de alta de empleado
     const nuevoEmpleado = ref({
       nombre: '',
       apellido1: '',
@@ -280,10 +280,10 @@ export default {
       fechaNacimiento: null,
       fechaAlta: null,
       fechaBaja: null,
-    });
+    }); // Ref para el nuevo empleado
 
-    const fechaMinimaPermitida = ref(calcularFechaMinimaPermitida());
-    const fechaNacimientoError = ref('');
+    const fechaMinimaPermitida = ref(calcularFechaMinimaPermitida()); // Ref para la fecha mínima permitida
+    const fechaNacimientoError = ref(''); // Ref para el mensaje de error de la fecha de nacimiento
 
     function calcularFechaMinimaPermitida() {
       const fechaActual = new Date();
@@ -293,17 +293,17 @@ export default {
         fechaActual.getDate()
       );
       return fechaMinima.toISOString().split('T')[0];
-    }
+    } // Función para calcular la fecha mínima permitida
 
     const openEditDialog = (empleado) => {
       selectedEmpleado.value = { ...empleado };
       errors.value = {};
       editDialog.value = true;
-    };
+    }; // Función para abrir el diálogo de edición
 
     const closeEditDialog = () => {
       editDialog.value = false;
-    };
+    }; // Función para cerrar el diálogo de edición
 
     const saveEditEmpleado = async () => {
       errors.value = {};
@@ -329,7 +329,7 @@ export default {
         console.error('Error al actualizar el empleado:', error);
         alert('Hubo un error al procesar la solicitud. Intente nuevamente más tarde.');
       }
-    };
+    }; // Función para guardar los cambios del empleado editado
 
     const showProjects = async (idEmpleado) => {
       try {
@@ -340,11 +340,11 @@ export default {
       } catch (error) {
         console.error('Error al obtener proyectos del empleado:', error);
       }
-    };
+    }; // Función para mostrar los proyectos del empleado
 
     const closeViewDialog = () => {
       viewDialog.value = false;
-    };
+    }; // Función para cerrar el diálogo de proyectos
 
     const deleteEmpleado = async (idEmpleado) => {
       try {
@@ -361,11 +361,11 @@ export default {
         }
         snackbar.value.visible = true;
       }
-    };
+    }; // Función para dar de baja un empleado
 
     const openAltaEmpleadoDialog = () => {
       altaEmpleadoDialog.value = true;
-    };
+    }; // Función para abrir el diálogo de alta de empleado
 
     const closeAltaEmpleadoDialog = () => {
       altaEmpleadoDialog.value = false;
@@ -383,7 +383,7 @@ export default {
         fechaAlta: null,
         fechaBaja: null,
       };
-    };
+    }; // Función para cerrar el diálogo de alta de empleado
 
     const altaEmpleado = async () => {
       if (nuevoEmpleado.value.fechaNacimiento > fechaMinimaPermitida.value) {
@@ -407,7 +407,7 @@ export default {
         }
         snackbar.value.visible = true;
       }
-    };
+    }; // Función para dar de alta un empleado
 
     return {
       empleados,
@@ -434,7 +434,7 @@ export default {
       altaEmpleado,
       fechaMinimaPermitida,
       fechaNacimientoError,
-    };
+    }; // Retorna las propiedades y funciones para que estén disponibles en el template
   },
 };
 </script>
@@ -443,5 +443,5 @@ export default {
 .v-text-field .v-messages__message,
 .v-select .v-messages__message {
   color: red;
-}
+} 
 </style>

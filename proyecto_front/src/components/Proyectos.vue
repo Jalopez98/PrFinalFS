@@ -208,26 +208,26 @@
 </template>
 
 <script>
-import { useEmpleadoStore } from './../stores/Empleados';
-import { storeToRefs } from 'pinia';
-import { ref, onMounted } from 'vue';
+import { useEmpleadoStore } from './../stores/Empleados'; // Importa el store de Pinia para empleados
+import { storeToRefs } from 'pinia'; // Importa storeToRefs para extraer propiedades reactivas del store
+import { ref, onMounted } from 'vue'; // Importa ref para crear referencias reactivas y onMounted para el ciclo de vida
 
 export default {
-  name: 'ProyectosList',
+  name: 'ProyectosList', // Nombre del componente
   setup() {
-    const empleadoStore = useEmpleadoStore();
-    const { proyectos, empleados } = storeToRefs(empleadoStore);
+    const empleadoStore = useEmpleadoStore(); // Obtiene el store de Pinia para empleados
+    const { proyectos, empleados } = storeToRefs(empleadoStore); // Extrae la lista de proyectos y empleados del store
 
     const snackbar = ref({
       visible: false,
       text: '',
-      color: 'error', // O cualquier color predeterminado
-      timeout: 5000, // O el tiempo que quieras que se muestre el snackbar
-    });
+      color: 'error',
+      timeout: 5000,
+    }); // Ref para controlar el snackbar
 
     onMounted(() => {
-      empleadoStore.fetchProyectos();
-      empleadoStore.fetchEmpleados();
+      empleadoStore.fetchProyectos(); // Obtiene la lista de proyectos del backend al montar el componente
+      empleadoStore.fetchEmpleados(); // Obtiene la lista de empleados del backend al montar el componente
     });
 
     const headers = [
@@ -236,36 +236,36 @@ export default {
       { title: 'Fecha Fin', key: 'fechaFin', align: 'start' },
       { title: 'Ubicación', key: 'lugar', align: 'start' },
       { title: 'Acciones', key: 'actions', align: 'center' },
-    ];
+    ]; // Encabezados para la tabla de datos
 
-    const altaProyectoDialog = ref(false);
-    const editDialog = ref(false);
-    const addEmployeesDialog = ref(false);
+    const altaProyectoDialog = ref(false); // Ref para controlar el diálogo de alta de proyecto
+    const editDialog = ref(false); // Ref para controlar el diálogo de edición de proyecto
+    const addEmployeesDialog = ref(false); // Ref para controlar el diálogo de agregar empleados a proyecto
     const nuevoProyecto = ref({
       descripcion: '',
       fechaInicio: null,
       fechaFin: null,
       lugar: '',
-    });
+    }); // Ref para el nuevo proyecto
     const selectedProyecto = ref({
       idProyecto: null,
       descripcion: '',
       fechaInicio: '',
       fechaFin: '',
       lugar: '',
-    });
-    const selectedEmployees = ref([]);
-    const errors = ref({});
+    }); // Ref para el proyecto seleccionado para editar
+    const selectedEmployees = ref([]); // Ref para los empleados seleccionados para agregar a un proyecto
+    const errors = ref({}); // Ref para almacenar los errores de validación
 
     const openEditDialog = (proyecto) => {
       selectedProyecto.value = { ...proyecto };
       errors.value = {};
       editDialog.value = true;
-    };
+    }; // Función para abrir el diálogo de edición de proyecto
 
     const closeEditDialog = () => {
       editDialog.value = false;
-    };
+    }; // Función para cerrar el diálogo de edición de proyecto
 
     const saveEditProyecto = async () => {
       errors.value = {};
@@ -290,7 +290,7 @@ export default {
         console.error('Error al actualizar el proyecto:', error);
         alert('Hubo un error al procesar la solicitud. Intente nuevamente más tarde.');
       }
-    };
+    }; // Función para guardar los cambios del proyecto editado
 
     const openAddEmployeesDialog = async (proyecto) => {
       selectedProyecto.value = { ...proyecto };
@@ -303,11 +303,11 @@ export default {
         console.error('Error al cargar empleados asignados:', error);
         alert('Hubo un error al cargar los empleados asignados al proyecto.');
       }
-    };
+    }; // Función para abrir el diálogo de agregar empleados a proyecto
 
     const closeAddEmployeesDialog = () => {
       addEmployeesDialog.value = false;
-    };
+    }; // Función para cerrar el diálogo de agregar empleados a proyecto
 
     const saveAddEmployees = async () => {
       try {
@@ -347,7 +347,7 @@ export default {
         console.error('Error al agregar/eliminar empleados del proyecto:', error);
         alert('Hubo un error al procesar la solicitud. Intente nuevamente más tarde.');
       }
-    };
+    }; // Función para guardar los cambios de los empleados asignados a un proyecto
 
     const deleteProyecto = async (idProyecto) => {
       try {
@@ -362,15 +362,15 @@ export default {
         }
       } catch (error) {
         console.error('Error al eliminar el proyecto:', error);
-          snackbar.value.text = 'Ha habido un error dando de baja al proyecto, inténtalo más tarde';
-          snackbar.value.color = 'red';
-          snackbar.value.visible = true;
+        snackbar.value.text = 'Ha habido un error dando de baja al proyecto, inténtalo más tarde';
+        snackbar.value.color = 'red';
+        snackbar.value.visible = true;
       }
-    };
+    }; // Función para dar de baja un proyecto
 
     const openAltaProyectoDialog = () => {
       altaProyectoDialog.value = true;
-    };
+    }; // Función para abrir el diálogo de alta de proyecto
 
     const closeAltaProyectoDialog = () => {
       altaProyectoDialog.value = false;
@@ -380,32 +380,31 @@ export default {
         fechaFin: null,
         lugar: '',
       };
-    };
+    }; // Función para cerrar el diálogo de alta de proyecto
 
-  const altaProyecto = async () => {
-  errors.value = {};
-  try {
-    const isSuccess = await empleadoStore.altaProyecto(nuevoProyecto.value);
-    if (isSuccess) {
-        snackbar.value.text = 'Proyecto dado de alta correctamente';
-        snackbar.value.color = 'green';
-        snackbar.value.visible = true;
-      closeAltaProyectoDialog();
-      empleadoStore.fetchProyectos();
-    } else {
-      if (empleadoStore.errors && Object.keys(empleadoStore.errors).length > 0) {
-        alert('Es obligatorio introducir todos los datos para dar de alta un nuevo proyecto');
-        for (let key in empleadoStore.errors) {
-          errors.value[key] = empleadoStore.errors[key];
+    const altaProyecto = async () => {
+      errors.value = {};
+      try {
+        const isSuccess = await empleadoStore.altaProyecto(nuevoProyecto.value);
+        if (isSuccess) {
+          snackbar.value.text = 'Proyecto dado de alta correctamente';
+          snackbar.value.color = 'green';
+          snackbar.value.visible = true;
+          closeAltaProyectoDialog();
+          empleadoStore.fetchProyectos();
+        } else {
+          if (empleadoStore.errors && Object.keys(empleadoStore.errors).length > 0) {
+            alert('Es obligatorio introducir todos los datos para dar de alta un nuevo proyecto');
+            for (let key in empleadoStore.errors) {
+              errors.value[key] = empleadoStore.errors[key];
+            }
+          }
         }
+      } catch (error) {
+        console.error('Error al crear el proyecto:', error);
+        alert('Hubo un error al procesar la solicitud. Intente nuevamente más tarde.');
       }
-    }
-  } catch (error) {
-    console.error('Error al crear el proyecto:', error);
-    alert('Hubo un error al procesar la solicitud. Intente nuevamente más tarde.');
-  }
-};
-
+    }; // Función para dar de alta un proyecto
 
     return {
       proyectos,
@@ -428,8 +427,8 @@ export default {
       openAltaProyectoDialog,
       closeAltaProyectoDialog,
       altaProyecto,
-      snackbar
-    };
+      snackbar,
+    }; // Retorna las propiedades y funciones para que estén disponibles en el template
   },
 };
 </script>

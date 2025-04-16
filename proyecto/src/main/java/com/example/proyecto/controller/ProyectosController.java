@@ -22,12 +22,20 @@ public class ProyectosController {
     @Autowired
     private ProyectoServiceImpl servicio;
 
+    /**
+     * Obtiene la lista de todos los proyectos disponibles.
+     * Devuelve una lista de objetos Proyecto.
+     */
     @GetMapping
     public List<Proyecto> obtenerProyectos(){
         return servicio.obtenerP();
     }
 
-    // Método POST para crear un nuevo proyecto
+    /**
+     * Crea un nuevo proyecto a partir de los datos recibidos.
+     * Valida los datos del proyecto antes de guardarlo.
+     * Devuelve un mensaje de éxito o error en formato ResponseEntity.
+     */
     @PostMapping("/nuevo")
     public ResponseEntity<String> crearProyecto(@Valid @RequestBody Proyecto proyecto) {
         try
@@ -41,7 +49,11 @@ public class ProyectosController {
 
     }
 
-    // Método PUT para actualizar un proyecto existente
+    /**
+     * Actualiza un proyecto existente con los datos recibidos.
+     * Valida los datos del proyecto antes de actualizarlo.
+     * Devuelve un mensaje de éxito o error en formato ResponseEntity.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<String> actualizarProyecto(@PathVariable int id, @Valid @RequestBody Proyecto proyecto) {
         try
@@ -60,7 +72,11 @@ public class ProyectosController {
 
     }
 
-    // Método DELETE para eliminar un proyecto existente
+    /**
+     * Elimina un proyecto existente por su ID.
+     * Verifica si el proyecto tiene empleados asociados antes de eliminarlo.
+     * Devuelve un mensaje de éxito o error en formato ResponseEntity.
+     */
     @PutMapping("/darBaja/{id}")
     public ResponseEntity<?> bajaProyecto(@PathVariable int id) {
         Proyecto proyectoExistente = servicio.findById(id);
@@ -68,7 +84,6 @@ public class ProyectosController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El proyecto con ID " + id + " no existe.");
         }
         if (!proyectoExistente.getEmpleados().isEmpty()) {
-            // Obtener los nombres de los empleados asociados al proyecto
             List<String> nombresEmpleados = proyectoExistente.getEmpleados().stream()
                     .map(Empleado::getNombre)
                     .toList();
@@ -78,7 +93,11 @@ public class ProyectosController {
         return ResponseEntity.ok("Proyecto eliminado correctamente.");
     }
 
-
+    /**
+     * Asigna un empleado a un proyecto existente.
+     * Devuelve el proyecto actualizado con el empleado asignado.
+     * Devuelve un error 404 si el proyecto no existe.
+     */
     @PutMapping("/{id}/asignar-empleado/{idUsuario}")
     public ResponseEntity<Proyecto> asignarEmpleado(@PathVariable int id, @PathVariable int idUsuario) {
         Proyecto proyectoExistente = servicio.findById(id);
@@ -88,7 +107,4 @@ public class ProyectosController {
         proyectoExistente = servicio.asignarEmpleado(id, idUsuario);
         return ResponseEntity.ok(proyectoExistente);
     }
-
-
-
 }

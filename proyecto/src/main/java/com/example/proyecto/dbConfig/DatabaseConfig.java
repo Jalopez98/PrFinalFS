@@ -17,11 +17,14 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @Configuration
 @EnableTransactionManagement
-class DatabaseConfig implements WebMvcConfigurer {
+public class DatabaseConfig implements WebMvcConfigurer {
 
     @Autowired
     private Environment env;
 
+    /**
+     * Configura los mapeos CORS para permitir solicitudes desde el frontend.
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -31,6 +34,10 @@ class DatabaseConfig implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
 
+    /**
+     * Define un bean DataSource para la conexión a la base de datos.
+     * Configura la conexión utilizando las propiedades del entorno.
+     */
     @Bean
     public static DataSource dataSource(Environment env) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -41,6 +48,10 @@ class DatabaseConfig implements WebMvcConfigurer {
         return dataSource;
     }
 
+    /**
+     * Define un bean EntityManagerFactory para la gestión de entidades JPA.
+     * Configura el EntityManagerFactory con la fuente de datos y las propiedades de Hibernate.
+     */
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
@@ -58,6 +69,10 @@ class DatabaseConfig implements WebMvcConfigurer {
         return entityManagerFactory;
     }
 
+    /**
+     * Define un bean TransactionManager para la gestión de transacciones JPA.
+     * Configura el TransactionManager con el EntityManagerFactory.
+     */
     @Bean
     public JpaTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -65,6 +80,9 @@ class DatabaseConfig implements WebMvcConfigurer {
         return transactionManager;
     }
 
+    /**
+     * Define un bean PersistenceExceptionTranslationPostProcessor para la traducción de excepciones de persistencia.
+     */
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();

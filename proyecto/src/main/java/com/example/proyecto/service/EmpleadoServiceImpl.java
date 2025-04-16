@@ -31,29 +31,59 @@ public class EmpleadoServiceImpl implements EmpleadoService{
     @Autowired
     private EmpleadoProyectoRepository empleadoProyectoRepository;
 
-    public List<Empleado> obtenerUsuarios(){return empleadoRepository.findAll();}
+    /**
+     * Obtiene una lista de todos los empleados.
+     * @return Lista de empleados.
+     */
+    public List<Empleado> obtenerUsuarios() {
+        return empleadoRepository.findAll();
+    }
 
+    /**
+     * Busca un empleado por su ID.
+     * @param id ID del empleado.
+     * @return El empleado encontrado.
+     * @throws ExceptionPersonalizada Si el empleado no se encuentra.
+     */
     public Empleado findById(int id) {
         return empleadoRepository.findById(id).orElseThrow(() -> new ExceptionPersonalizada("Empleado no encontrado"));
     }
 
+    /**
+     * Obtiene una lista de todos los empleados.
+     * @return Lista de empleados.
+     */
     @Override
     public List<Empleado> findAll() {
         return empleadoRepository.findAll();
     }
 
-    public ResponseEntity <String> crearNuevoEmpleado(Empleado e){
-
+    /**
+     * Crea un nuevo empleado.
+     * @param e Objeto Empleado a crear.
+     * @return ResponseEntity con un mensaje de éxito.
+     */
+    public ResponseEntity<String> crearNuevoEmpleado(Empleado e) {
         empleadoRepository.save(e);
         return ResponseEntity.ok("Usuario agregado correctamente");
     }
 
+    /**
+     * Busca un proyecto por su ID.
+     * @param id ID del proyecto.
+     * @return El proyecto encontrado o null si no existe.
+     */
     public Proyecto findProyectoById(int id) {
         Optional<Proyecto> proyecto = proyectoRepository.findById(id);
         return proyecto.orElse(null);
     }
 
-
+    /**
+     * Actualiza un empleado existente.
+     * @param id ID del empleado a actualizar.
+     * @param empleadoDetalles Objeto Empleado con los datos actualizados.
+     * @return El empleado actualizado o null si no existe.
+     */
     public Empleado actualizarEmpleado(int id, Empleado empleadoDetalles) {
         Optional<Empleado> optionalEmpleado = empleadoRepository.findById(id);
         if (optionalEmpleado.isPresent()) {
@@ -77,6 +107,11 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         }
     }
 
+    /**
+     * Elimina un empleado por su ID.
+     * @param id ID del empleado a eliminar.
+     * @throws ExceptionPersonalizada Si el empleado no se puede eliminar porque está asignado a proyectos.
+     */
     public void eliminarEmpleado(int id) {
         Empleado empleado = findById(id);
 
@@ -95,16 +130,18 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         empleadoRepository.save(empleado);
     }
 
-
-
-
+    /**
+     * Asigna un proyecto a un empleado.
+     * @param empleadoId ID del empleado.
+     * @param proyectoId ID del proyecto.
+     * @return Mensaje de éxito si la asignación se realiza correctamente.
+     * @throws EntityNotFoundException Si el empleado o el proyecto no se encuentran.
+     */
     public String asignarProyecto(int empleadoId, int proyectoId) {
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(empleadoId);
         Optional<Proyecto> proyectoOpt = proyectoRepository.findById(proyectoId);
 
         if (empleadoOpt.isPresent() && proyectoOpt.isPresent()) {
-
-
             EmpleadoProyecto empleadoProyecto = new EmpleadoProyecto();
             empleadoProyecto.setIdEmpleado(empleadoId);
             empleadoProyecto.setIdProyecto(proyectoId);
@@ -118,7 +155,12 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         }
     }
 
-
+    /**
+     * Elimina un proyecto de un empleado.
+     * @param empleadoId ID del empleado.
+     * @param proyectoId ID del proyecto.
+     * @return El empleado actualizado o null si no se encuentra.
+     */
     public Empleado eliminarProyecto(int empleadoId, int proyectoId) {
         Empleado empleado = findById(empleadoId);
         Proyecto proyecto = findProyectoById(proyectoId);
@@ -128,7 +170,6 @@ public class EmpleadoServiceImpl implements EmpleadoService{
         }
         return null;
     }
-
 }
 
 
